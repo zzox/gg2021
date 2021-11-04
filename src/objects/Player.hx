@@ -22,6 +22,8 @@ class Player extends FlxSprite {
 
     var lrVel:Int = 0;
     var udVel:Int = 0;
+    var curVel:Float = 0.;
+    var prevPos:FlxPoint;
 
     var holds:HoldsObj = {
         left: 0,
@@ -36,6 +38,8 @@ class Player extends FlxSprite {
         setSize(16, 8);
 
         drag.set(100);
+
+        prevPos = new FlxPoint(x, y);
     }
 
     override public function update (elapsed:Float) {
@@ -46,6 +50,9 @@ class Player extends FlxSprite {
     }
 
     function handleVelocity (elapsed:Float) {
+        calcVel();
+        // trace(curVel / elapsed);
+
         var yAccel = GRAVITY_ACCEL;
         if (udVel == -1) {
             yAccel += FLY_UP_ACCEL;
@@ -108,6 +115,11 @@ class Player extends FlxSprite {
                 udVel = 1;
             }
         }
+    }
 
+    function calcVel () {
+        curVel = Math.sqrt(Math.pow(prevPos.x - x, 2) + Math.pow(prevPos.y - y, 2));
+
+        prevPos = new FlxPoint(x, y);
     }
 }
