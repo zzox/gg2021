@@ -59,7 +59,7 @@ class Player extends FlxSprite {
     }
 
     override public function update (elapsed:Float) {
-        trace(curVel / elapsed);
+        // trace(curVel / elapsed);
 
         handleInputs(elapsed);
         handleVelocity(elapsed);
@@ -89,12 +89,18 @@ class Player extends FlxSprite {
         // update accel and maxVel from wind
         if (currentWind != null) {
             if (currentWind.dir == Left || currentWind.dir == Right) {
-                xMaxVel = currentWind.vel;
+                // only set max accel if going with wind
+                if ((currentWind.dir == Left && velocity.x <= 0) || (currentWind.dir == Right && velocity.x >= 0)) {
+                    xMaxVel = currentWind.vel;
+                }
+
                 xAccel += currentWind.vel * (currentWind.dir == Left ? -1 : 1);
             }
 
             if (currentWind.dir == Up || currentWind.dir == Down) {
-                yMaxVel = currentWind.vel;
+                if ((currentWind.dir == Up && velocity.y <= 0) || (currentWind.dir == Down && velocity.y >= 0)) {
+                    yMaxVel = currentWind.vel;
+                }
                 yAccel += currentWind.vel * (currentWind.dir == Up ? -1 : 1);
             }
         }
@@ -106,8 +112,6 @@ class Player extends FlxSprite {
 
     // if max vel is different than what is currently set, tween to it
     function handleMaxVelocity(x:Float, y:Float) {
-        trace(maxVelocity);
-
         if (x == maxVelocity.x) {
             if (maxXVel.tween != null) {
                 maxXVel.tween.cancel();
