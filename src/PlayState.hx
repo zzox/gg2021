@@ -77,11 +77,14 @@ class PlayState extends FlxState {
 
         FlxG.collide(groundLayer, player);
 
-        trace(FlxG.overlap(winds, player, windEffectPlayer));
+        // check if in a wind box.  If not, set wind to null.
+        if (!FlxG.overlap(winds, player, windEffectPlayer)) {
+            player.currentWind = null;
+        }
     }
 
     function windEffectPlayer (wind:Windbox, player:Player) {
-        trace(wind.direction, wind.vel);
+        player.currentWind = { dir: wind.direction, vel: wind.vel };
     }
 
     function createTileLayer (map:TiledMap, layerName:String):Null<FlxTilemap> {
