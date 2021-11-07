@@ -1,17 +1,32 @@
-package;
-
+import data.Utils;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxState;
 import flixel.addons.editors.tiled.TiledMap;
+import flixel.addons.editors.tiled.TiledObjectLayer;
 import flixel.addons.editors.tiled.TiledTileLayer;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.tile.FlxBaseTilemap.FlxTilemapAutoTiling;
 import flixel.tile.FlxTilemap;
 import objects.Player;
+
+// TODO: consider moving?
+class Windbox extends FlxObject {
+    public var direction:Dir;
+    public var vel:Int;
+
+    public function new (x, y, width, height, direction, vel) {
+        super(x, y, width, height);
+        this.direction = direction;
+        this.vel = vel;
+    }
+}
 
 class PlayState extends FlxState {
     static inline final Y_MAP_OFFSET = -8;
 
     var groundLayer:FlxTilemap;
+    var winds:FlxTypedGroup<Windbox>;
     var player:Player;
 
     override public function create() {
@@ -27,6 +42,27 @@ class PlayState extends FlxState {
         player = new Player(160, 16, this);
         add(player);
 
+        winds = new FlxTypedGroup<Windbox>();
+        if (map.getLayer('wind') != null) {
+            final w = cast(map.getLayer('wind'), TiledObjectLayer).objects;
+            w.map(windItem -> {
+                final windDir = windItem.properties.get('direction');
+
+                final wind = new Windbox(
+                    windItem.x,
+                    windItem.y + Y_MAP_OFFSET,
+                    windItem.width,
+                    windItem.height,
+                    stringToDir(windDir),
+                    // MD:
+                    600
+                );
+
+                winds.add(wind);
+            });
+        }
+        add(winds);
+
         // MD:
         FlxG.worldBounds.set(0, 0, 640, 360);
         FlxG.camera.setScrollBounds(0, 640, 0, 360);
@@ -40,6 +76,12 @@ class PlayState extends FlxState {
         super.update(elapsed);
 
         FlxG.collide(groundLayer, player);
+
+        trace(FlxG.overlap(winds, player, windEffectPlayer));
+    }
+
+    function windEffectPlayer (wind:Windbox, player:Player) {
+        trace(wind.direction, wind.vel);
     }
 
     function createTileLayer (map:TiledMap, layerName:String):Null<FlxTilemap> {
