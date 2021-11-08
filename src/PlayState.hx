@@ -55,7 +55,7 @@ class PlayState extends FlxState {
                     windItem.height,
                     stringToDir(windDir),
                     // MD:
-                    600
+                    1000
                 );
 
                 winds.add(wind);

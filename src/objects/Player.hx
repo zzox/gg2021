@@ -21,11 +21,11 @@ typedef VelTween = {
 class Player extends FlxSprite {
     static inline final GRAVITY_ACCEL = 800;
     static inline final FLY_UP_ACCEL = -1600;
-    static inline final X_ACCEL = 500;
-    static inline final X_MAX_VEL = 200;
-    static inline final MAX_UP_VEL = 100;
-    static inline final MAX_FLOAT_DOWN_VEL = 100;
-    static inline final MAX_DIVE_DOWN_VEL = 300;
+    static inline final X_ACCEL = 800;
+    static inline final X_MAX_VEL = 240;
+    static inline final MAX_UP_VEL = 120;
+    static inline final MAX_FLOAT_DOWN_VEL = 120;
+    static inline final MAX_DIVE_DOWN_VEL = 360;
 
     static inline final MAX_VEL_TWEEN_TIME = 0.5;
 
@@ -101,10 +101,14 @@ class Player extends FlxSprite {
                 if ((currentWind.dir == Up && velocity.y <= 0) || (currentWind.dir == Down && velocity.y >= 0)) {
                     yMaxVel = currentWind.vel;
                 }
+
+                trace(currentWind.vel * (currentWind.dir == Up ? -1 : 1));
+
                 yAccel += currentWind.vel * (currentWind.dir == Up ? -1 : 1);
             }
         }
 
+        trace(xAccel, yAccel);
         acceleration.set(xAccel, yAccel);
 
         handleMaxVelocity(xMaxVel, yMaxVel);
