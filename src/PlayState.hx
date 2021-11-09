@@ -36,11 +36,16 @@ class PlayState extends FlxState {
 
         // MD:
         final map = new TiledMap(AssetPaths.soar_test__tmx);
+
+        add(createTileLayer(map, 'background'));
+
         groundLayer = createTileLayer(map, 'ground');
         add(groundLayer);
 
         player = new Player(160, 16, this);
         add(player);
+
+        add(createTileLayer(map, 'foreground'));
 
         winds = new FlxTypedGroup<Windbox>();
         if (map.getLayer('wind') != null) {
