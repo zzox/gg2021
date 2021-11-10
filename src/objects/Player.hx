@@ -2,6 +2,7 @@ package objects;
 
 import data.Utils;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
@@ -22,7 +23,7 @@ class Player extends FlxSprite {
     static inline final GRAVITY_ACCEL = 800;
     static inline final FLY_UP_ACCEL = -1600;
     static inline final X_ACCEL = 800;
-    static inline final X_MAX_VEL = 240;
+    static inline final X_MAX_VEL = 180;
     static inline final MAX_UP_VEL = 120;
     static inline final MAX_FLOAT_DOWN_VEL = 120;
     static inline final MAX_DIVE_DOWN_VEL = 360;
@@ -48,8 +49,17 @@ class Player extends FlxSprite {
 
     public function new (x:Int, y:Int, scene:PlayState) {
         super(x, y);
-        makeGraphic(16, 8, 0xff0d2030);
-        setSize(16, 8);
+
+        loadGraphic(AssetPaths.cardinal__png, true, 24, 24);
+
+        setSize(13, 9);
+        offset.set(6, 8);
+
+        animation.add('stand', [0]);
+        animation.add('run', [0, 1], 15);
+        animation.add('dive', [2, 3], 15);
+        animation.add('fly', [6, 7, 8], 15);
+        animation.add('fly-slow', [9, 10], 15);
 
         drag.set(100);
 
@@ -63,8 +73,33 @@ class Player extends FlxSprite {
 
         handleInputs(elapsed);
         handleVelocity(elapsed);
+        handleAnimation();
 
         super.update(elapsed);
+    }
+
+    function handleAnimation () {
+        if (isTouching(FlxObject.DOWN)) {
+            if (Math.abs(velocity.x) > 5) {
+                animation.play('run');
+            } else {
+                animation.play('stand');
+            }
+        } else if (udVel == 1) {
+            animation.play('dive');
+        } else if (udVel == -1) {
+            animation.play('fly-slow');
+        } else {
+            animation.play('fly');
+        }
+
+        if (acceleration.x < 0 && flipX) {
+            flipX = false;
+        }
+
+        if (acceleration.x > 0 && !flipX) {
+            flipX = true;
+        }
     }
 
     function handleVelocity (elapsed:Float) {
